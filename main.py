@@ -11,27 +11,27 @@ base_url = 'https://hh.ru/search/vacancy?area=1&search_period=3&st=searchVacancy
 template = ['python', 'Python']
 
 
+def soup_content(url, headers):
+    session = requests.Session()
+    request = session.get(url, headers=headers)
+    soup = bs(request.content, 'lxml')
+
+    return soup
+
 def hh_parse(base_url, headers):
     jobs = []
     urls = [base_url]
-    location = ""
-    salary = ""
-    session = requests.Session()
-    request = session.get(base_url, headers=headers)
-    if request.status_code == 200:
-        soup = bs(request.content, 'lxml')
-        try:
-            pagination = soup.find_all('a', attrs={'data-qa': 'pager-page'})
-            count = int(pagination[-1].text)
-            for i in range(count):
-                url = f'https://hh.ru/search/vacancy?area=1&search_period=3&st=searchVacancy&text=python&page={i}'
-                if url not in urls:
-                    urls.append(url)
-        except:
-            pass
+    soup = soup_content(base_url, headers)
+
+    pagination = soup.find_all('a', attrs={'data-qa': 'pager-page'})
+    count = int(pagination[-1].text)
+    for i in range(count):
+        url = f'https://hh.ru/search/vacancy?area=1&search_period=3&st=searchVacancy&text=python&page={i}'
+        if url not in urls:
+            urls.append(url)
+
     for url in urls:
-        request = session.get(url, headers=headers)
-        soup = bs(request.content, 'lxml')
+        soup = soup_content(url, headers)
         divs = soup.find_all('div', attrs={'class': 'vacancy-serp-item'})
 
         for div in divs:
@@ -64,8 +64,6 @@ def hh_parse(base_url, headers):
                     'content': content
                 })
                 print("Найдено вакансий:", len(jobs))
-    else:
-        pass
     return jobs
 
 
@@ -78,5 +76,4 @@ def files_writer(jobs):
 
 
 if __name__ == '__main__':
-    # jobs = hh_parse(base_url, headers)
     files_writer(hh_parse(base_url, headers))
