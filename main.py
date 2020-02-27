@@ -8,13 +8,12 @@ headers = {'accept': '*/*',
            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.5 Safari/605.1.15'}
 
 base_url = 'https://hh.ru/search/vacancy?area=1&search_period=3&st=searchVacancy&text=python&page=0'
+template = ['python', 'Python']
 
 
 def hh_parse(base_url, headers):
     jobs = []
-    urls = []
-    template = ['python', 'Python']
-    urls.append(base_url)
+    urls = [base_url]
     location = ""
     salary = ""
     session = requests.Session()
