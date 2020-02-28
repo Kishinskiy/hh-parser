@@ -5,24 +5,28 @@ import csv
 from regex import regex
 
 headers = {'accept': '*/*',
-           'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.5 Safari/605.1.15'}
+           'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) '
+                         'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+                         'Version/13.0.5 Safari/605.1.15'
+           }
 
 page_num = 0
 base_url = 'https://hh.ru/search/vacancy?area=1&search_period=14&st=searchVacancy&text=python&page={page_num}'
 template = ['python', 'Python']
 
 
-def soup_content(url, headers):
+def soup_content(url, hdr):
     session = requests.Session()
-    request = session.get(url, headers=headers)
+    request = session.get(url, headers=hdr)
     soup = bs(request.content, 'lxml')
 
     return soup
 
-def hh_parse(base_url, headers):
+
+def hh_parse(burl, hdr):
     jobs = []
-    urls = [base_url]
-    soup = soup_content(base_url, headers)
+    urls = [burl]
+    soup = soup_content(burl, hdr)
 
     pagination = soup.find_all('a', attrs={'data-qa': 'pager-page'})
     count = int(pagination[-1].text)
@@ -32,7 +36,7 @@ def hh_parse(base_url, headers):
             urls.append(url)
 
     for url in urls:
-        soup = soup_content(url, headers)
+        soup = soup_content(url, hdr)
         divs = soup.find_all('div', attrs={'class': 'vacancy-serp-item'})
 
         for div in divs:
@@ -42,16 +46,16 @@ def hh_parse(base_url, headers):
             href = div.find('a', attrs={'data-qa': 'vacancy-serp__vacancy-title'})['href']
             try:
                 company = div.find('a', attrs={'data-qa': 'vacancy-serp__vacancy-employer'}).text
-            except:
-                pass
+            except Exception as e:
+                print(e)
             try:
                 salary = div.find('span', attrs={'data-qa': 'vacancy-serp__vacancy-compensation'}).text
-            except:
-                pass
+            except Exception as e:
+                print(e)
             try:
                 location = div.find('spam', attrs={'class': 'metro-station'})
-            except:
-                pass
+            except Exception as e:
+                print(e)
             text1 = div.find('div', attrs={'data-qa': 'vacancy-serp__vacancy_snippet_responsibility'}).text
             text2 = div.find('div', attrs={'data-qa': 'vacancy-serp__vacancy_snippet_requirement'}).text
             content = text1 + ' ' + text2
