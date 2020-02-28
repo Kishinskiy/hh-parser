@@ -7,7 +7,8 @@ from regex import regex
 headers = {'accept': '*/*',
            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.5 Safari/605.1.15'}
 
-base_url = 'https://hh.ru/search/vacancy?area=1&search_period=14&st=searchVacancy&text=python&page=0'
+page_num = 0
+base_url = 'https://hh.ru/search/vacancy?area=1&search_period=14&st=searchVacancy&text=python&page={page_num}'
 template = ['python', 'Python']
 
 
@@ -26,7 +27,7 @@ def hh_parse(base_url, headers):
     pagination = soup.find_all('a', attrs={'data-qa': 'pager-page'})
     count = int(pagination[-1].text)
     for i in range(count):
-        url = f'https://hh.ru/search/vacancy?area=1&search_period=14&st=searchVacancy&text=python&page={i}'
+        url = base_url.format(page_num=i)
         if url not in urls:
             urls.append(url)
 
