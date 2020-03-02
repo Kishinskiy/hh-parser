@@ -1,3 +1,3 @@
 # hh-parser
-## parse hh.ru for Python Vacations
+## parse hh.ru for Python vacancy
 
